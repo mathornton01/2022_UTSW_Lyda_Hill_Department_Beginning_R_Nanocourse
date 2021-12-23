@@ -1,7 +1,8 @@
 # 2022 UTSW Lyda Hill Department of Bioinformatics Beginning R Nanocourse
 
-In 2022 The UTSW (is to) deliver(ed) a 2-Day Nanocourse introducing some basic R. 
+In 2022 The UTSW Lyda Hill Department of Bioinformatics (is to) deliver(ed) a 2-Day Nanocourse introducing basic R Usage. 
 The course covers the following topics: 
+
 *Day 1:*
 * R Installation/R-Studio Access Tutorial
 * Getting help with the R Interface
