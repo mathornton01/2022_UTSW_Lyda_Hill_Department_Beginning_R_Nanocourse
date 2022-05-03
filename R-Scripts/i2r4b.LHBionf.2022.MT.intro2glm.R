@@ -127,8 +127,65 @@ cbind(coefficients(irisn.setosa.full),
 
 library(htmlTable)
 colnames(coefficients.df) <- rep(c("Coefficient","P-Value"),3)
-format(coefficients.df,digits=4,scientific=FALSE) -> coefficients.df;
+format(coefficients.df,digits=1,scientific=FALSE) -> coefficients.df;
 htmlTable(coefficients.df,n.rgroup=c(3,3,1),
           rgroup=c("Singleton Effects", "Bivariate Effects", "Trivariate Effects"),
           n.cgroup=rep(2,3),cgroup=c("Setosa Data", "Versicolor Data", "Virginica Data"),
           scientific=F)
+
+simple.formula <- formula(Sepal.Length~Sepal.Width+Petal.Length+Petal.Width); 
+
+data.split <- sample(size=nrow(iris),c("test","train"),replace=TRUE,prob=c(0.1,0.9))
+
+simple.model <- glm(simple.formula, data=iris[data.split=="train",]);
+
+test.preds <- predict(simple.model,iris[data.split=="test",]);
+
+plot(test.preds,iris[data.split=="test","Sepal.Length"]);
+abline(0,1)
+summary(simple.model)
+
+
+# Ordinal Predictors Example 
+
+inf.mort.quants <- quantile(swiss$Infant.Mortality,c(0.25,0.5,0.27));
+
+inf.mort.ord <- ifelse(swiss$Infant.Mortality <= inf.mort.quants[1], "Q1", 
+                       ifelse(swiss$Infant.Mortality <= inf.mort.quants[2], "Q2", 
+                              ifelse(swiss$Infant.Mortality <= inf.mort.quants[3], "Q3","Q4")));
+
+swiss$imo <- inf.mort.ord; 
+
+swiss.form.ord.1 <- formula(Fertility ~ ordered(imo,levels=paste("Q",1:4,sep="")));
+swiss.mod.ord.1 <- glm(swiss.form.ord.1, data=swiss); 
+
+inf.mort.cont.lin <- ifelse(inf.mort.ord == "Q1", 1, 
+                        ifelse(inf.mort.ord == "Q2",2,
+                               ifelse(inf.mort.ord == "Q3", 3, 4)));
+
+inf.mort.cont.qua <- ifelse(inf.mort.ord == "Q1", 1, 
+                            ifelse(inf.mort.ord == "Q2",4,
+                                   ifelse(inf.mort.ord == "Q3", 9, 16)));
+
+swiss$imo.l <- inf.mort.cont.lin;
+swiss$imo.q <- inf.mort.cont.qua; 
+
+swiss.form.ord.2 <- formula(Fertility ~ imo.l +imo.q);
+swiss.mod.ord.2 <- glm(swiss.form.ord.2,data=swiss);
+
+inf.mort.quants <- quantile(swiss$Infant.Mortality,c(0.33,0.66));
+inf.mort.ord <- ifelse(swiss$Infant.Mortality <= inf.mort.quants[1], "Low", 
+                       ifelse(swiss$Infant.Mortality <= inf.mort.quants[2], "Medium", "High"));
+swiss$imo <- inf.mort.ord;
+
+swiss.ex1.f1 <- formula(Fertility ~ relevel(as.factor(imo),ref="High"));
+swiss.ex1.m1 <- glm(swiss.ex1.f1,data=swiss);
+summary(swiss.ex1.m1);
+
+summary(swiss.mod.ord.1)
+summary(swiss.mod.ord.2)
+
+iris.form.1 <- formula(Sepal.Length~Sepal.Width*Petal.Length*Petal.Width+Species);
+iris.mod.1 <- glm(iris.form.1,data=iris); 
+
+plot(iris.mod.1)
