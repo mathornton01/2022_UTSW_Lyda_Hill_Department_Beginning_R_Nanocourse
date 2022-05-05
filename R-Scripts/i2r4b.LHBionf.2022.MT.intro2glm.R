@@ -425,3 +425,9 @@ iris.form.3 <- formula(Petal.Length~Linear.PWC+Quadratic.PWC);
 iris.mod.3 <- glm(iris.form.3,data=iris);
 
 summary(iris.mod.3);
+
+
+formula(Sepal.Length~0+offset(1.3*Sepal.Width)+Petal.Length+Petal.Width+
+           Sepal.Width:Petal.Length + 
+           Sepal.Width:Petal.Width + Petal.Length:Petal.Width + 			
+           Sepal.Width:Petal.Length:Petal.Width) -> irisn.form5;
